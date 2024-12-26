@@ -17,8 +17,8 @@ import TeachersList from "./pages/Admin/TeachersList";
 import { TeacherContext } from "./context/TeacherContext";
 
 import TeacherAppointments from "./pages/Teacher/TeacherAppointments";
-import TeacherDashboard from "./pages/Teacher/teacherDashboard";
-import TeacherProfile from "./pages/Teacher/teacherProfile";
+import TeacherDashboard from "./pages/Teacher/TeacherDashboard";
+import TeacherProfile from "./pages/Teacher/TeacherProfile";
 import Inbox from "../../frontend/src/pages/Inbox";
 
 const App = () => {
