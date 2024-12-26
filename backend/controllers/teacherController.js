@@ -6,7 +6,7 @@ import appointmentModel from "../models/appointmentModel.js";
 // Helper function for hashing passwords
 const hashPassword = (password) => {
   return crypto
-    .createHmac("sha256", process.env.PASSWORD_SECRET)
+    .createHmac("sha256", process.env.JWT_SECRET)
     .update(password)
     .digest("hex");
 };
@@ -14,7 +14,7 @@ const hashPassword = (password) => {
 // Helper function for verifying passwords
 const verifyPassword = (password, hashedPassword) => {
   const hashedInputPassword = crypto
-    .createHmac("sha256", process.env.PASSWORD_SECRET)
+    .createHmac("sha256", process.env.JWT_SECRET)
     .update(password)
     .digest("hex");
   return hashedInputPassword === hashedPassword;
