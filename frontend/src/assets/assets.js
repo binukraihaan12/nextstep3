@@ -1,4 +1,4 @@
-import logo from "./logo.png";
+import logo from "./Logo.png";
 import dropdown_icon from "./dropdown_icon.svg";
 import menu_icon from "./menu_icon.svg";
 import verified_icon from "./verified_icon.svg";
