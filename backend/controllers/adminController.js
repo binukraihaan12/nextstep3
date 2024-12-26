@@ -1,12 +1,27 @@
 import validator from "validator";
-import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
+import crypto from "crypto";
 import teacherModel from "../models/teacherModel.js";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
 import userModel from "../models/userModel.js";
 
-// API  For adding teachers
+// Helper function to hash passwords using crypto
+const hashPassword = (password) => {
+  const salt = crypto.randomBytes(16).toString("hex"); // Generate a random salt
+  const hashedPassword = crypto
+    .pbkdf2Sync(password, salt, 1000, 64, "sha512")
+    .toString("hex"); // Hash the password with salt
+  return { salt, hashedPassword };
+};
+
+// Helper function to verify passwords
+const verifyPassword = (password, salt, hashedPassword) => {
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
+  return hash === hashedPassword;
+};
+
+// API for adding teachers
 const addTeacher = async (req, res) => {
   try {
     const {
@@ -66,11 +81,10 @@ const addTeacher = async (req, res) => {
       });
     }
 
-    // password hashing
-    const salt = await bcrypt.genSalt(8);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    // Hash the password using crypto
+    const { salt, hashedPassword } = hashPassword(password);
 
-    // image uploading to cloudinary
+    // Image uploading to cloudinary
     const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
       resource_type: "image",
     });
@@ -80,6 +94,7 @@ const addTeacher = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      salt,
       image: imageUrl,
       subject,
       degree,
@@ -105,7 +120,7 @@ const addTeacher = async (req, res) => {
   }
 };
 
-// API For Admin Login
+// API for Admin Login
 const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -126,10 +141,10 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-// API For getting teacher data
+// API for getting teacher data
 const allTeachers = async (req, res) => {
   try {
-    const teachers = await teacherModel.find({}).select("-password");
+    const teachers = await teacherModel.find({}).select("-password -salt");
 
     res.json({ success: true, teachers });
   } catch (error) {
