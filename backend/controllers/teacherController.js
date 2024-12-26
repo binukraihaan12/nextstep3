@@ -75,7 +75,103 @@ const loginTeacher = async (req, res) => {
   }
 };
 
-// Other APIs remain unchanged...
+const appointmentsTeacher = async (req, res) => {
+  try {
+    const { tecId } = req.body;
+    const appointments = await appointmentModel.find({ tecId });
+
+    res.json({ success: true, appointments });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const appointmentComplete = async (req, res) => {
+  try {
+    const { tecId, appointmentId } = req.body;
+    const appointmentData = await appointmentModel.findById(appointmentId);
+
+    if (appointmentData && appointmentData.tecId === tecId) {
+      await appointmentModel.findByIdAndUpdate(appointmentId, {
+        isCompleted: true,
+      });
+      return res.json({ success: true, message: "Q&A Session Completed ✨" });
+    } else {
+      return res.json({ success: false, message: "Mark Failed" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const appointmentCancel = async (req, res) => {
+  try {
+    const { tecId, appointmentId } = req.body;
+    const appointmentData = await appointmentModel.findById(appointmentId);
+
+    if (appointmentData && appointmentData.tecId === tecId) {
+      await appointmentModel.findByIdAndUpdate(appointmentId, {
+        cancelled: true,
+      });
+      return res.json({ success: true, message: "Q&A Session Cancelled" });
+    } else {
+      return res.json({ success: false, message: "Cancellation Failed" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const DashboardData = async (req, res) => {
+  try {
+    const { tecId } = req.body;
+    const appointments = await appointmentModel.find({ tecId });
+
+    let students = [];
+
+    appointments.map((item) => {
+      if (!students.includes(item.userId)) {
+        students.push(item.userId);
+      }
+    });
+
+    const dashData = {
+      appointments: appointments.length,
+      students: students.length,
+      latestAppointments: appointments.reverse().slice(0, 4),
+    };
+
+    res.json({ success: true, dashData });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const teacherProfile = async (req, res) => {
+  try {
+    const { tecId } = req.body;
+    const profileData = await teacherModel.findById(tecId).select("-password");
+    res.json({ success: true, profileData });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updateTeacherProfile = async (req, res) => {
+  try {
+    const { tecId, address, available, mobile, whatsapp } = req.body;
+    await teacherModel.findByIdAndUpdate(tecId, {
+      address,
+      available,
+      mobile,
+      whatsapp,
+    });
+
+    res.json({ success: true, message: "Profile Updated Successfully" });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export {
   changeAvailability,
