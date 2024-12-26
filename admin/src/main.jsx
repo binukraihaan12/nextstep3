@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import AdminContextProvider from "./context/AdminContext.jsx";
-import TeacherContextProvider from "./context/teacherContext.jsx";
+import TeacherContextProvider from "./context/TeacherContext.jsx";
 import AppContextProvider from "./context/AppCotext.jsx";
 
 createRoot(document.getElementById("root")).render(
