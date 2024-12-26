@@ -4,20 +4,32 @@ import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
 
 // Helper function for hashing passwords
+// const hashPassword = (password) => {
+//   return crypto
+//     .createHmac("sha256", process.env.JWT_SECRET)
+//     .update(password)
+//     .digest("hex");
+// };
+
+// // Helper function for verifying passwords
+// const verifyPassword = (password, hashedPassword) => {
+//   const hashedInputPassword = crypto
+//     .createHmac("sha256", process.env.JWT_SECRET)
+//     .update(password)
+//     .digest("hex");
+//   return hashedInputPassword === hashedPassword;
+// };
+
 const hashPassword = (password) => {
-  return crypto
-    .createHmac("sha256", process.env.JWT_SECRET)
-    .update(password)
-    .digest("hex");
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
+  return { salt, hash };
 };
 
-// Helper function for verifying passwords
-const verifyPassword = (password, hashedPassword) => {
-  const hashedInputPassword = crypto
-    .createHmac("sha256", process.env.JWT_SECRET)
-    .update(password)
-    .digest("hex");
-  return hashedInputPassword === hashedPassword;
+// Helper function to verify hashed passwords
+const verifyPassword = (password, salt, hash) => {
+  const hashedPassword = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512").toString("hex");
+  return hashedPassword === hash;
 };
 
 const changeAvailability = async (req, res) => {
