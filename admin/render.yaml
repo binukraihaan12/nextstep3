@@ -1,0 +1,7 @@
+staticSite:
+  buildCommand: npm run build
+  publishPath: ./build
+  redirects:
+    - source: /*
+      destination: /index.html
+      status: 200
